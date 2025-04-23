@@ -1,0 +1,7 @@
+
+postgres:
+  user: "postgres"
+  pass: "tostadojq"
+  host: "localhost"
+  port: "5432"
+  db_name: "postgres"
