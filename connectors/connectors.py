@@ -21,10 +21,14 @@ def posgres_delete_by_value(df,table_name,schema,delete_row):
             params = {f"p{j}": fecha for j, fecha in enumerate(batch)}
             conn.execute(text(delete), params)
 
+def posgres_truncate(table_name,schema):
+        with posgres_engine.begin() as conn:
+                delete = f"TRUNCATE TABLE {schema}.{table_name}"
+                conn.execute(text(delete))
+
 def df_read_postgres(query):
     df = pd.read_sql_query(query, posgres_engine)
     return df
 
-def df_save_postgres(df, table_name, schema, delete_row):
-    posgres_delete_by_value(df, table_name, schema, delete_row)
+def df_save_postgres(df, table_name, schema):
     df.to_sql(name=table_name, con= posgres_engine, schema=schema, if_exists='append', index=False)
