@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def save_caldad_aire_posgres_transform(df):
     df.columns = df.columns.str.lower()
@@ -11,12 +12,15 @@ def save_caldad_aire_posgres_transform(df):
     df = df.drop(columns=['fecha', 'hora'])
     df = df.rename(columns={'datetime': 'fecha'})
 
-    df = df.astype(
-        {'co_centenario': 'string', 'no2_centenario': 'string', 'pm10_centenario': 'string', 'co_cordoba': 'string',
-         'no2_cordoba': 'string', 'pm10_cordoba': 'string', 'co_la_boca': 'string', 'no2_la_boca': 'string',
-         'pm10_la_boca': 'string', 'co_palermo': 'string', 'no2_palermo': 'string', 'pm10_palermo': 'string'})
+    df = df.replace(to_replace=r'.*<.*', value=np.nan, regex=True)
+    df = df.replace(to_replace=r'.*#.*', value=np.nan, regex=True)
+    df = df.replace(to_replace=r'(?i)^s/d$', value=np.nan, regex=True)
+
+    df = df.astype({'co_centenario': 'float', 'no2_centenario': 'float', 'pm10_centenario': 'float', 'co_cordoba': 'float',
+    'no2_cordoba': 'float', 'pm10_cordoba': 'float', 'co_la_boca': 'float', 'no2_la_boca': 'float',
+    'pm10_la_boca': 'float', 'co_palermo': 'float', 'no2_palermo': 'float', 'pm10_palermo': 'float'})
+
     df = df.reindex(
         columns=['fecha','co_centenario','no2_centenario','pm10_centenario','co_cordoba','no2_cordoba','pm10_cordoba',
                  'co_la_boca','no2_la_boca','pm10_la_boca','co_palermo','no2_palermo','pm10_palermo'])
-    df = df.fillna('n/d')
     return df
