@@ -76,3 +76,21 @@ def get_aqi_indicators():
         return json.dumps({"error message": str(e)})
 
     return '200'
+
+def viajes_transporte_publico():
+    try:
+        df = pd.read_csv("datasets/dataset_viajes_sube.csv")
+        df = viajes_transporte_transform(df)
+
+        posgres_delete_by_value(df = df,
+                               table_name=config['DL']['viajes_transporte_publico']['table_name'].get(),
+                               schema=config['DL']['viajes_transporte_publico']['schema'].get(),
+                               delete_row=config['DL']['viajes_transporte_publico']['delete_row'].get())
+
+        df_save_postgres(df = df,
+                         table_name=config['DL']['viajes_transporte_publico']['table_name'].get(),
+                         schema=config['DL']['viajes_transporte_publico']['schema'].get())
+    except Exception as e:
+        return json.dumps({"error message": str(e)})
+
+    return '200'

@@ -24,6 +24,8 @@ def caldad_aire_transform(df):
     df = df.reindex(
         columns=['fecha','co_centenario','no2_centenario','pm10_centenario','co_cordoba','no2_cordoba','pm10_cordoba',
                  'co_la_boca','no2_la_boca','pm10_la_boca','co_palermo','no2_palermo','pm10_palermo'])
+
+    df = df.drop_duplicates()
     return df
 
 def promedio_metricas_por_area_tmp_transform(df):
@@ -62,3 +64,17 @@ def top3_per_month_transform(df):
     df_top3_per_month = df_top3_per_month.sort_values(by=['año', 'mes','aqi'], ascending=True)
     df_top3_per_month = df_top3_per_month.drop(columns=['año', 'mes'])
     return df_top3_per_month
+
+def viajes_transporte_transform(df):
+    df.columns = df.columns.str.lower()
+    df.rename(columns={'dia': 'fecha'}, inplace=True)
+    df['fecha'] = pd.to_datetime(df['fecha'], format='%d%b%Y:%H:%M:%S')
+    df.dropna(subset=['cantidad'], inplace=True)
+    df = df.astype({'tipo_transporte': 'string','parcial': 'bool','cantidad': 'int'})
+    df = df.reindex(columns=['fecha', 'tipo_transporte', 'parcial', 'cantidad'])
+
+    df = df.drop_duplicates()
+    df = df.sort_values(by='parcial', ascending=True).drop_duplicates(subset=['fecha','tipo_transporte'], keep='first')
+    df = df.sort_values('cantidad', ascending=False).drop_duplicates(
+        subset=['fecha', 'tipo_transporte', 'parcial'], keep='first')
+    return df
