@@ -78,3 +78,7 @@ def viajes_transporte_transform(df):
     df = df.sort_values('cantidad', ascending=False).drop_duplicates(
         subset=['fecha', 'tipo_transporte', 'parcial'], keep='first')
     return df
+
+def dias_impacto_contaminacion_transform(df):
+    df = df.astype({'aqi': 'int', 'cantidad': 'int'})
+    return df

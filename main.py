@@ -2,12 +2,17 @@ from connectors.connectors import *
 from transforms import *
 from queries.promedio_metricas_por_area_tmp_query import *
 from queries.promedio_metricas_por_dia_query import *
+from queries.dias_impacto_contaminacion_query import *
 from queries.aqi_categories_query import *
 import json
+from flask import Flask, render_template, make_response, request
+
+app = Flask(__name__)
 
 config = confuse.Configuration('main_config', __name__)
 config.set_file('config.yml')
 
+@app.route('/calidad_aire', methods=["POST"])
 def calidad_aire(): #Ej 1
     try:
         df = pd.read_csv("datasets/calidad-aire.csv")
@@ -27,6 +32,7 @@ def calidad_aire(): #Ej 1
 
     return '200'
 
+@app.route('/promedio_metricas_por_area_tmp', methods=["POST"])
 def promedio_metricas_por_area_tmp():
     posgres_truncate(table_name=config['DL']['promedio_metricas_por_area_tmp']['table_name'].get(),
                      schema=config['DL']['promedio_metricas_por_area_tmp']['schema'].get())
@@ -39,7 +45,8 @@ def promedio_metricas_por_area_tmp():
                          table_name=config['DL']['promedio_metricas_por_area_tmp']['table_name'].get(),
                          schema=config['DL']['promedio_metricas_por_area_tmp']['schema'].get())
 
-def get_aqi_indicators():
+@app.route('/aqi_indicators', methods=["POST"])
+def aqi_indicators():
     try:
         promedio_metricas_por_dia_sql = promedio_metricas_por_dia_query()
         df = df_read_postgres(promedio_metricas_por_dia_sql)
@@ -50,24 +57,30 @@ def get_aqi_indicators():
 
         #Resultado Ejercicio 2
         df_day_indicator = df_day_indicator_transform(df_aqi, df_aqi_categories)
-        posgres_truncate(table_name=config['DW']['indicador_calidad_aire']['table_name'].get(),
-                         schema=config['DW']['indicador_calidad_aire']['schema'].get())
+        posgres_delete_by_value(df=df_day_indicator,
+                                table_name=config['DW']['indicador_calidad_aire']['table_name'].get(),
+                                schema=config['DW']['indicador_calidad_aire']['schema'].get(),
+                                delete_row=config['DW']['indicador_calidad_aire']['delete_row'].get())
         df_save_postgres(df=df_day_indicator,
                          table_name=config['DW']['indicador_calidad_aire']['table_name'].get(),
                          schema=config['DW']['indicador_calidad_aire']['schema'].get())
 
         #Resultado Ejercicio 3
         top_10_best_days = top_10_best_days_transform(df_day_indicator)
-        posgres_truncate(table_name=config['DW']['indicador_calidad_aire']['table_name'].get(),
-                         schema=config['DW']['indicador_calidad_aire']['schema'].get())
+        posgres_delete_by_value(df=top_10_best_days,
+                                table_name=config['DW']['top_10_dias']['table_name'].get(),
+                                schema=config['DW']['top_10_dias']['schema'].get(),
+                                delete_row=config['DW']['top_10_dias']['delete_row'].get())
         df_save_postgres(df=top_10_best_days,
                          table_name=config['DW']['top_10_dias']['table_name'].get(),
                          schema=config['DW']['top_10_dias']['schema'].get())
 
         # Resultado Ejercicio 4
         top3_per_month_year = top3_per_month_transform(df_day_indicator)
-        posgres_truncate(table_name=config['DW']['top_3_por_mes']['table_name'].get(),
-                         schema=config['DW']['top_3_por_mes']['schema'].get())
+        posgres_delete_by_value(df=top3_per_month_year,
+                                table_name=config['DW']['top_3_por_mes']['table_name'].get(),
+                                schema=config['DW']['top_3_por_mes']['schema'].get(),
+                                delete_row=config['DW']['top_3_por_mes']['delete_row'].get())
         df_save_postgres(df=top3_per_month_year,
                          table_name=config['DW']['top_3_por_mes']['table_name'].get(),
                          schema=config['DW']['top_3_por_mes']['schema'].get())
@@ -77,6 +90,7 @@ def get_aqi_indicators():
 
     return '200'
 
+@app.route('/viajes_transporte_publico', methods=["POST"])
 def viajes_transporte_publico():
     try:
         df = pd.read_csv("datasets/dataset_viajes_sube.csv")
@@ -94,3 +108,34 @@ def viajes_transporte_publico():
         return json.dumps({"error message": str(e)})
 
     return '200'
+
+@app.route('/dias_menor_impacto_contaminacion/<criteria>', methods=["POST"])
+def dias_menor_impacto_contaminacion(criteria):
+    try:
+    # Ejercicio 5
+        if criteria.lower() == 'menor':
+            table = 'dias_menor_impacto_contaminacion'
+            query_criteria = 'ASC'
+        else:
+            table = 'dias_mayor_impacto_contaminacion'
+            query_criteria = 'DESC'
+
+        dias_impacto_contaminacion_sql = dias_impacto_contaminacion_query(query_criteria)
+        df = df_read_postgres(dias_impacto_contaminacion_sql)
+        df = dias_impacto_contaminacion_transform(df)
+        posgres_delete_by_value(df=df,
+                                table_name=config['DW'][table]['table_name'].get(),
+                                schema=config['DW'][table]['schema'].get(),
+                                delete_row=config['DW'][table]['delete_row'].get())
+
+        df_save_postgres(df=df,
+                         table_name=config['DW'][table]['table_name'].get(),
+                         schema=config['DW'][table]['schema'].get())
+
+    except Exception as e:
+        return json.dumps({"error message": str(e)})
+
+    return '200'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)

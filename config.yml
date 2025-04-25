@@ -20,11 +20,24 @@ DW:
   indicador_calidad_aire:
     table_name: 'indicador_calidad_aire'
     schema: 'produccion'
+    delete_row: 'fecha'
 
   top_10_dias:
     table_name: 'top_10_dias'
     schema: 'produccion'
+    delete_row: 'fecha'
 
   top_3_por_mes:
     table_name: 'top_3_por_mes'
     schema: 'produccion'
+    delete_row: 'fecha'
+
+  dias_menor_impacto_contaminacion:
+    table_name: 'dias_menor_impacto_contaminacion'
+    schema: 'produccion'
+    delete_row: 'fecha'
+
+  dias_mayor_impacto_contaminacion:
+    table_name: 'dias_mayor_impacto_contaminacion'
+    schema: 'produccion'
+    delete_row: 'fecha'
