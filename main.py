@@ -125,8 +125,8 @@ def viajes_transporte_publico():
 
     return '200'
 
-@app.route('/dias_menor_impacto_contaminacion/<criteria>', methods=["POST"])
-def dias_menor_impacto_contaminacion(criteria):
+@app.route('/dias_impacto_contaminacion/<criteria>', methods=["POST"])
+def dias_impacto_contaminacion(criteria):
     try:
     # Ejercicio 5
         if criteria.lower() == 'menor':
@@ -160,8 +160,8 @@ def run_all():
         promedio_metricas_por_area_tmp()
         aqi_indicators()
         viajes_transporte_publico()
-        dias_menor_impacto_contaminacion('menor')
-        dias_menor_impacto_contaminacion('mayor')
+        dias_impacto_contaminacion('menor')
+        dias_impacto_contaminacion('mayor')
 
     except Exception as e:
         return json.dumps({"error message": str(e)})
