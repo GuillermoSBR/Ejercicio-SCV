@@ -5,7 +5,7 @@ import aqi
 def caldad_aire_transform(df):
     df.columns = df.columns.str.lower()
 
-    df = df[(df['hora'] < 24) & (df['hora'] > 0)].copy()
+    df = df[(df['hora'] <= 24) & (df['hora'] > 0)].copy()
     df['hora'] = df['hora'].replace(24, 0)
 
     df['fecha'] = pd.to_datetime(df['fecha'], format='%d%b%Y:%H:%M:%S')
