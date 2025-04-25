@@ -19,6 +19,7 @@ Luego conectarse a la base de datos con una coneccion que tenga las siguientes c
 - **Puerto**: `5433`
 - **Usuario**: `postgres`
 - **Contraseña**: `tostadojq`
+- **DB**: `postgres`
 
 Para ver las tablas que piden los ejercicios ejecutar las siguientes queries:
 
