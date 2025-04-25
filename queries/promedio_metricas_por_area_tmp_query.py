@@ -7,7 +7,7 @@ def promedio_metricas_por_area_tmp_query(area):
       AVG(pm10_{}) AS pm10, 
       fecha::date 
     FROM 
-      public.calidad_aire 
+      preproduccion.calidad_aire 
     GROUP BY 
       fecha::date
     """.format(area,area,area)
