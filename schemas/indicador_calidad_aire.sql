@@ -1,4 +1,4 @@
-CREATE TABLE produccion.indicador_calidad_aire (
+CREATE TABLE IF NOT EXISTS produccion.indicador_calidad_aire (
 	fecha timestamp,
     aqi int,
     categoria varchar(40),

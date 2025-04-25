@@ -2,6 +2,6 @@
 postgres:
   user: "postgres"
   pass: "tostadojq"
-  host: "localhost"
+  host: "db"
   port: "5432"
   db_name: "postgres"

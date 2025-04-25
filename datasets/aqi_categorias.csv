@@ -1,0 +1,7 @@
+aqi_inf,aqi_sup,categoria,nivel
+0,50,Buena,1
+51,100,Moderada,2
+101,150,Dañina para grupos sensibles,3
+151,200,Dañina para la salud,4
+201,300,Muy dañina para la salud,5
+301,500,Peligrosa,6

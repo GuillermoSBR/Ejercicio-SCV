@@ -1,4 +1,4 @@
-CREATE TABLE preproduccion.aqi_categorias (
+CREATE TABLE IF NOT EXISTS preproduccion.aqi_categorias (
     aqi_inf int,
     aqi_sup int,
     categoria varchar(40),

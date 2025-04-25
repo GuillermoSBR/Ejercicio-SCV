@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:15
+    container_name: ejercicio_scv_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tostadojq
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: ejercicio_scv_app
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:tostadojq@db:5432/postgres
+    volumes:
+      - .:/Ejercicio-SCV
+    command: python main.py
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

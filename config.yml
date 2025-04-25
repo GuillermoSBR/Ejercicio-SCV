@@ -16,6 +16,10 @@ DL:
     schema: 'preproduccion'
     delete_row: 'fecha'
 
+  aqi_categorias:
+    table_name: 'aqi_categorias'
+    schema: 'preproduccion'
+
 DW:
   indicador_calidad_aire:
     table_name: 'indicador_calidad_aire'

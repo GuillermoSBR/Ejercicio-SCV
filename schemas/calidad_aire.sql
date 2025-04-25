@@ -1,4 +1,4 @@
-CREATE TABLE preproduccion.calidad_aire (
+CREATE TABLE IF NOT EXISTS preproduccion.calidad_aire (
 	fecha timestamp,
     co_centenario float,
     no2_centenario float,
